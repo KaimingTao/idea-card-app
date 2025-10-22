@@ -54,10 +54,11 @@ def md2yaml_card(file_path):
     return cards
 
 
-def main(folder, save_file=Path("new_cards.yaml")):
+def main(folder, save_file=None):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    save_file = save_file.parent / f"{save_file.stem}-{timestamp}{save_file.suffix}"
+    if not save_file:
+        save_file = folder.parent / f"new_cards-{timestamp}.yaml"
 
     cards = []
     for file in folder.iterdir():
@@ -65,6 +66,10 @@ def main(folder, save_file=Path("new_cards.yaml")):
             continue
         print(file)
         cards.extend(md2yaml_card(file))
+
+    cards.sort(key=lambda x: x['tags'][0])
+
+    print('# Cards', len(cards))
 
     with open(save_file, "w") as f:
         yaml.dump(
@@ -80,4 +85,9 @@ def main(folder, save_file=Path("new_cards.yaml")):
 if __name__ == "__main__":
     import sys
 
-    main(Path(sys.argv[1]).expanduser().resolve())
+    if len(sys.argv) == 3:
+        save_file = Path(sys.argv[2]).expanduser().resolve()
+    else:
+        save_file = None
+
+    main(Path(sys.argv[1]).expanduser().resolve(), save_file)

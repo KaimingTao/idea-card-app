@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "python3 data/yaml2json.py -i data/cards.yaml -o data/cards.json",
+    "prebuild": "python3 data/yaml2json.py -i data/cards.yaml",
     "dev": "vite",
     "build": "vite build && cpy data dist/data --recursive",
     "preview": "vite preview",
@@ -34,5 +34,8 @@
     "vite": "^5.1.3",
     "vite-plugin-gh-pages": "^1.0.1",
     "vitest": "^1.5.0"
+  },
+  "dependencies": {
+    "marked": "^16.4.1"
   }
 }

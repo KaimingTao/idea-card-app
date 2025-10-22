@@ -1,4 +1,15 @@
+import { ensureMarkedReady, parseMarkdown } from './markdown.js';
+
 let cardsCache = null;
+
+const cardsRequestUrl = (() => {
+  try {
+    return new URL('../data/cards.json', import.meta.url).href;
+  } catch (error) {
+    console.warn('Unable to resolve cards.json via import.meta.url, falling back to relative path', error);
+    return 'data/cards.json';
+  }
+})();
 
 const cardPalette = [
   '#fde68a',
@@ -40,6 +51,38 @@ function generateCardId(seed = 0) {
   return `card-${timestamp}-${seed}-${randomSegment}`;
 }
 
+function buildDetailsMarkdown(detailItems, rawDetails, rawSummary) {
+  if (Array.isArray(detailItems) && detailItems.length > 0) {
+    return detailItems
+      .map((item) => {
+        if (/^\s*(?:[-*+]\s+|\d+\.\s+)/.test(item)) {
+          return item;
+        }
+        return `- ${item}`;
+      })
+      .join('\n');
+  }
+
+  if (rawDetails) {
+    return rawDetails;
+  }
+
+  if (rawSummary) {
+    return rawSummary;
+  }
+
+  return '';
+}
+
+function renderDetailsHtml(markdownSource) {
+  if (!markdownSource) {
+    return '';
+  }
+
+  const html = parseMarkdown(markdownSource);
+  return typeof html === 'string' ? html.trim() : '';
+}
+
 function normalizeCards(raw) {
   if (!Array.isArray(raw)) {
     return [];
@@ -74,6 +117,9 @@ function normalizeCards(raw) {
       ? detailItems
       : rawDetails || rawSummary || '';
 
+    const detailsMarkdown = buildDetailsMarkdown(detailItems, rawDetails, rawSummary);
+    const detailsHtml = renderDetailsHtml(detailsMarkdown);
+
     const tags = Array.isArray(card.tags) ? card.tags.filter((tag) => typeof tag === 'string') : [];
     const image = card.image && typeof card.image === 'object' ? {
       src: typeof card.image.src === 'string' ? card.image.src.trim() : '',
@@ -86,6 +132,7 @@ function normalizeCards(raw) {
       fullTitle,
       summary,
       details,
+      detailsHtml,
       tags,
       image,
     };
@@ -101,9 +148,18 @@ function shuffleCards(cards) {
   return shuffled;
 }
 
-async function loadFromImport() {
+function loadFromBundle() {
+  if (typeof import.meta.glob !== 'function') {
+    return null;
+  }
+
   try {
-    const module = await import('../data/cards.json');
+    const modules = import.meta.glob('../data/cards.json', { eager: true });
+    const module = modules['../data/cards.json'];
+    if (!module) {
+      return null;
+    }
+
     const payload = module.default ?? module;
     if (!Array.isArray(payload)) {
       return null;
@@ -111,13 +167,13 @@ async function loadFromImport() {
 
     return payload;
   } catch (error) {
-    console.warn('Falling back to network fetch for cards', error);
+    console.warn('Unable to load cards bundle via import.meta.glob', error);
     return null;
   }
 }
 
 async function loadFromNetwork() {
-  const response = await fetch('data/cards.json', { cache: 'no-store' });
+  const response = await fetch(cardsRequestUrl, { cache: 'no-store' });
 
   if (!response.ok) {
     throw new Error(`Cards request failed with status ${response.status}`);
@@ -146,9 +202,15 @@ export async function fetchCards() {
     return cardsCache;
   }
 
-  const imported = await loadFromImport();
-  if (imported && imported.length > 0) {
-    cardsCache = prepareCards(imported, { shuffle: true });
+  try {
+    await ensureMarkedReady();
+  } catch (error) {
+    console.warn('Unable to preload markdown parser for cards', error);
+  }
+
+  const bundled = loadFromBundle();
+  if (bundled && bundled.length > 0) {
+    cardsCache = prepareCards(bundled, { shuffle: true });
     return cardsCache;
   }
 
