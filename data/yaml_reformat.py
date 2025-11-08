@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Convert card data from YAML to the JSON format used by the idea card grid."""
+"""Normalize card YAML files used by the idea card grid."""
 
 import argparse
-import json
 from pathlib import Path
 
 try:
@@ -55,7 +54,7 @@ def reformat_yaml(yaml_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate data/cards.json from a YAML source file."
+        description='Normalize card YAML data in-place.'
     )
     parser.add_argument(
         "-i",

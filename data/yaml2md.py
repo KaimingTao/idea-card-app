@@ -22,11 +22,12 @@ def one_file(card_file):
             fd.write("\n")
             if details:
                 fd.write(f"{details}\n")
-                fd.write("\n")
             if tags:
-                fd.write(f'tags: {",".join(tags)}')
-                fd.write("\n")
-            fd.write("\n")
+                fd.write(f'tags: {",".join(tags)}\n')
+
+            fd.write('\n---\n')
+            fd.write('\n')
+
     return cards
 
 
