@@ -1,0 +1,4 @@
+- idea template
+    - imports, should be in table 1 or table 2
+    - how to auto load the import
+- table 2: code snippet table, contains an executable code

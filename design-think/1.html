@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Cards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Basic Modern Card */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            transition: height 0.3s ease;
+        }
+
+        .card:hover::before {
+            height: 8px;
+        }
+
+        /* Gradient Card */
+        .card-gradient {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            color: white;
+            border: none;
+        }
+
+        .card-gradient::before {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Dark Theme Card */
+        .card-dark {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .card-dark::before {
+            background: linear-gradient(90deg, #f39c12, #e74c3c, #9b59b6, #3498db);
+        }
+
+        /* Glassmorphism Card */
+        .card-glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: white;
+        }
+
+        .card-glass::before {
+            background: linear-gradient(90deg, rgba(255,255,255,0.4), rgba(255,255,255,0.6));
+        }
+
+        .quote-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+            position: relative;
+        }
+
+        .quote-text::before {
+            content: '"';
+            font-size: 3rem;
+            position: absolute;
+            left: -10px;
+            top: -10px;
+            opacity: 0.3;
+            font-family: serif;
+        }
+
+        .quote-author {
+            text-align: right;
+            font-weight: bold;
+            opacity: 0.8;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .quote-author::before {
+            content: '— ';
+            margin-right: 5px;
+        }
+
+        /* Card Icons */
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card-gradient .card-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .card-dark .card-icon {
+            background: linear-gradient(135deg, #f39c12, #e74c3c);
+        }
+
+        .card-glass .card-icon {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Simple Idea Cards */
+        .idea-card {
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        .idea-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .card-gradient .idea-title,
+        .card-dark .idea-title,
+        .card-glass .idea-title {
+            color: white;
+        }
+
+        .idea-description {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            opacity: 0.8;
+        }
+
+        /* Animation for cards appearing */
+        .card {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.3s; }
+        .card:nth-child(5) { animation-delay: 0.4s; }
+        .card:nth-child(6) { animation-delay: 0.5s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .quote-text {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Beautiful Quote & Idea Cards</h1>
+
+    <div class="cards-container">
+        <!-- Quote Card 1 -->
+        <div class="card">
+            <div class="card-icon">💡</div>
+            <div class="quote-text">The only way to do great work is to love what you do.</div>
+            <div class="quote-author">Steve Jobs</div>
+        </div>
+
+        <!-- Gradient Quote Card -->
+        <div class="card card-gradient">
+            <div class="card-icon">✨</div>
+            <div class="quote-text">Life is what happens to you while you're busy making other plans.</div>
+            <div class="quote-author">John Lennon</div>
+        </div>
+
+        <!-- Dark Theme Quote Card -->
+        <div class="card card-dark">
+            <div class="card-icon">🚀</div>
+            <div class="quote-text">Innovation distinguishes between a leader and a follower.</div>
+            <div class="quote-author">Steve Jobs</div>
+        </div>
+
+        <!-- Glass Morphism Card -->
+        <div class="card card-glass">
+            <div class="card-icon">🌟</div>
+            <div class="quote-text">The future belongs to those who believe in the beauty of their dreams.</div>
+            <div class="quote-author">Eleanor Roosevelt</div>
+        </div>
+
+        <!-- Simple Idea Card -->
+        <div class="card idea-card">
+            <div class="card-icon">🎯</div>
+            <div class="idea-title">Focus on Progress</div>
+            <div class="idea-description">Small daily improvements lead to remarkable results over time. Consistency beats perfection.</div>
+        </div>
+
+        <!-- Another Idea Card -->
+        <div class="card card-gradient idea-card">
+            <div class="card-icon">🌱</div>
+            <div class="idea-title">Growth Mindset</div>
+            <div class="idea-description">Embrace challenges as opportunities to learn and grow. Every setback is a setup for a comeback.</div>
+        </div>
+    </div>
+
+    <script>
+        // Add click animation
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Add hover sound effect (optional)
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.filter = 'brightness(1.05)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.filter = 'brightness(1)';
+            });
+        });
+    </script>
+</body>
+</html>

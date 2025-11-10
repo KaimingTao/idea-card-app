@@ -1,0 +1,280 @@
+import React from "react";
+import { motion } from "framer-motion";
+import { Pin, MoreHorizontal } from "lucide-react";
+
+/**
+ * PaperCard — a tactile, paper-style card component.
+ *
+ * Tech: React + TailwindCSS + Framer Motion + Lucide icons
+ *
+ * Props:
+ *  - variant: 'cotton' | 'notebook' | 'kraft' | 'glossy' (default: 'cotton')
+ *  - elevation: 0..4 (default: 2)
+ *  - title?: string
+ *  - subtitle?: string
+ *  - actions?: React.ReactNode (e.g., buttons, menus)
+ *  - pin?: boolean (adds a pushpin accent)
+ *  - perforated?: boolean (adds a dotted line near the top)
+ *  - className?: string
+ *
+ * Usage: export default below renders a demo gallery.
+ * Copy the <PaperCard /> component into your project and use as needed.
+ */
+
+type Variant = "cotton" | "notebook" | "kraft" | "glossy";
+
+interface PaperCardProps {
+  variant?: Variant;
+  elevation?: 0 | 1 | 2 | 3 | 4;
+  title?: string;
+  subtitle?: string;
+  actions?: React.ReactNode;
+  pin?: boolean;
+  perforated?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const cx = (...classes: Array<string | false | undefined>) =>
+  classes.filter(Boolean).join(" ");
+
+const elevationClass = (n: number) =>
+  [
+    "shadow-none",
+    "shadow-sm",
+    "shadow",
+    "shadow-lg",
+    "shadow-xl",
+  ][Math.min(4, Math.max(0, n))];
+
+function variantStyle(variant: Variant): React.CSSProperties {
+  switch (variant) {
+    case "notebook": {
+      // Pale blue ruled lines + red margin on the left
+      const lines =
+        "repeating-linear-gradient(0deg, rgba(120,160,255,0.22) 0 1px, transparent 1px 28px)";
+      const margin = "linear-gradient(90deg, rgba(255,0,0,0.18) 64px, transparent 65px)";
+      return {
+        backgroundImage: `${margin}, ${lines}`,
+        backgroundSize: "100% 100%, 100% 28px",
+        backgroundPosition: "0 0, 0 0",
+        backgroundColor: "#fff",
+      };
+    }
+    case "kraft": {
+      // Warm kraft paper with subtle speckle noise
+      const fiber1 =
+        "radial-gradient(1px 1px at 20% 30%, rgba(0,0,0,0.06) 0 50%, transparent 55%)";
+      const fiber2 =
+        "radial-gradient(1px 1px at 70% 60%, rgba(0,0,0,0.05) 0 50%, transparent 55%)";
+      return {
+        backgroundImage: `${fiber1}, ${fiber2}`,
+        backgroundColor: "#F6E8D5", // kraft-y beige
+      };
+    }
+    case "glossy": {
+      // Slight glossy sheen
+      const sheen =
+        "linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.65) 24%, rgba(255,255,255,0.0) 60%)";
+      return {
+        backgroundImage: sheen,
+        backgroundColor: "#fafafa",
+      };
+    }
+    case "cotton":
+    default: {
+      // Soft cotton paper with gentle grain
+      const grain1 =
+        "radial-gradient(1px 1px at 12% 18%, rgba(0,0,0,0.05) 0 50%, transparent 55%)";
+      const grain2 =
+        "radial-gradient(1px 1px at 82% 70%, rgba(0,0,0,0.04) 0 50%, transparent 55%)";
+      return {
+        backgroundImage: `${grain1}, ${grain2}`,
+        backgroundColor: "#fff",
+      };
+    }
+  }
+}
+
+export function PaperCard({
+  variant = "cotton",
+  elevation = 2,
+  title,
+  subtitle,
+  actions,
+  pin,
+  perforated,
+  className,
+  children,
+}: PaperCardProps) {
+  return (
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+      className={cx(
+        "relative rounded-2xl ring-1 ring-black/5 p-5 md:p-6",
+        elevationClass(elevation),
+        // neutral base with subtle inner highlight
+        "bg-neutral-50",
+        className
+      )}
+      style={variantStyle(variant)}
+    >
+      {/* pin accent */}
+      {pin && (
+        <div className="absolute -top-3 left-6 h-6 w-6 rounded-full bg-neutral-200 ring-1 ring-black/10 flex items-center justify-center rotate-[-12deg] shadow">
+          <Pin className="h-3.5 w-3.5 opacity-70" />
+        </div>
+      )}
+
+      {/* perforation */}
+      {perforated && (
+        <div className="absolute left-5 right-5 top-4 border-t border-dashed border-neutral-300" />
+      )}
+
+      {/* header */}
+      {(title || subtitle || actions) && (
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div>
+            {title && (
+              <h3 className="text-lg font-semibold tracking-tight text-neutral-900">
+                {title}
+              </h3>
+            )}
+            {subtitle && (
+              <p className="text-sm text-neutral-500">{subtitle}</p>
+            )}
+          </div>
+          <div className="shrink-0 flex items-center gap-2">
+            {actions}
+            {!actions && (
+              <button
+                aria-label="More"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-white/60 text-neutral-500 hover:bg-white/90 hover:text-neutral-700 transition"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* content */}
+      <div className="text-neutral-700 leading-7">
+        {children ?? (
+          <p>
+            This is a paper-style card. Put any content here: text, images, forms,
+            or controls. It has a tactile, print-like feel with gentle shadows and
+            texture.
+          </p>
+        )}
+      </div>
+
+      {/* soft edge highlight */}
+      <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6)]" />
+    </motion.div>
+  );
+}
+
+// ---- Demo Gallery (default export) ----
+export default function PaperCardDemo() {
+  return (
+    <div className="min-h-screen w-full bg-gradient-to-b from-neutral-100 to-white p-6 md:p-10">
+      <div className="mx-auto max-w-6xl">
+        <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-2">
+          Paper Card Styles
+        </h1>
+        <p className="text-neutral-600 mb-8">
+          A small collection of tactile, paper-inspired cards. Hover any card to
+          feel the lift. Copy the component into your project and tweak variants
+          or elevation.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <PaperCard
+            title="Cotton"
+            subtitle="Soft, bright white"
+            variant="cotton"
+            elevation={3}
+            pin
+          >
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Clean & minimal
+              </li>
+              <li>Subtle paper grain
+              </li>
+              <li>Good for content-heavy cards</li>
+            </ul>
+          </PaperCard>
+
+          <PaperCard
+            title="Notebook"
+            subtitle="Ruled lines + margin"
+            variant="notebook"
+            elevation={2}
+            perforated
+          >
+            <p className="mb-3">
+              Perfect for notes, to-dos, or anything that benefits from a
+              hand-written vibe.
+            </p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Ruled baseline grid</li>
+              <li>Red margin guide</li>
+              <li>Optional perforation</li>
+            </ul>
+          </PaperCard>
+
+          <PaperCard
+            title="Kraft"
+            subtitle="Warm, recycled look"
+            variant="kraft"
+            elevation={4}
+          >
+            <p className="mb-3">
+              A cozy, tactile style that works well for recipes, journaling, or
+              crafty UIs.
+            </p>
+            <div className="flex gap-2">
+              <button className="rounded-xl px-3 py-1.5 text-sm border border-neutral-300 bg-white/70 hover:bg-white/90 transition">
+                Save
+              </button>
+              <button className="rounded-xl px-3 py-1.5 text-sm border border-neutral-300 bg-white/70 hover:bg-white/90 transition">
+                Share
+              </button>
+            </div>
+          </PaperCard>
+
+          <PaperCard
+            title="Glossy"
+            subtitle="Subtle sheen"
+            variant="glossy"
+            elevation={1}
+            pin
+          >
+            <p>
+              Inspired by photo prints and product cards. Slight glossy overlay
+              provides a premium feel.
+            </p>
+          </PaperCard>
+
+          <PaperCard title="Plain" subtitle="Just a card" elevation={0}>
+            <p>
+              Don’t want texture? Remove the background images in
+              <code className="mx-1 rounded bg-neutral-200/60 px-1 py-0.5">variantStyle()</code>
+              and rely on shadows + rings.
+            </p>
+          </PaperCard>
+
+          <PaperCard title="Actions" subtitle="With menu" elevation={2}>
+            <p>
+              You can pass your own actions into the header via the
+              <code className="mx-1 rounded bg-neutral-200/60 px-1 py-0.5">actions</code>
+              prop.
+            </p>
+          </PaperCard>
+        </div>
+      </div>
+    </div>
+  );
+}

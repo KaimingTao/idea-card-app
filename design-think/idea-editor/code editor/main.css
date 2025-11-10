@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  font-family: monospace;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+}
+
+#editor {
+  width: 50%;
+  height: 100%;
+  padding: 10px;
+  font-size: 14px;
+  background: #1e1e1e;
+  color: #dcdcdc;
+  border: none;
+  resize: none;
+  outline: none;
+}
+
+#preview {
+  width: 50%;
+  height: 100%;
+  border: none;
+  background: white;
+}
