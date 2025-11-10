@@ -3,7 +3,7 @@ import { ghPages } from 'vite-plugin-gh-pages'
 
 
 export default defineConfig({
-  base: '/Think-Kendo/',   // ← change this
+  base: '/Elementary/',   // ← change this
   plugins: [ghPages()],
   test: {
     environment: 'jsdom',
